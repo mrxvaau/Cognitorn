@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cognitorn — GitHub for AI Agent Skills</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- GRID BACKGROUND -->
+<div class="bg-grid"></div>
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-logo">
+        <span class="logo-icon">⬡</span>
+        <span>Cognitorn</span>
+      </div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-tabs">
+      <button class="tab-btn active" data-tab="login">Sign In</button>
+      <button class="tab-btn" data-tab="register">Create Account</button>
+    </div>
+
+    <div class="tab-content active" id="loginTab">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="loginUsername" placeholder="your_handle" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" />
+      </div>
+      <div class="form-error" id="loginError"></div>
+      <button class="btn-primary full" id="loginBtn">Sign In →</button>
+      <p class="demo-hint">Demo: <code>demo</code> / <code>demo123</code></p>
+    </div>
+
+    <div class="tab-content" id="registerTab">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="regUsername" placeholder="your_handle" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="regEmail" placeholder="you@dev.io" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="••••••••" />
+      </div>
+      <div class="form-error" id="regError"></div>
+      <button class="btn-primary full" id="registerBtn">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PUBLISH MODAL -->
+<div class="modal-overlay" id="publishModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>Publish New Skill</h3>
+      <button class="modal-close" id="publishClose">✕</button>
+    </div>
+    <div class="publish-grid">
+      <div class="publish-left">
+        <div class="form-group">
+          <label>Skill Name</label>
+          <input type="text" id="pubName" placeholder="e.g. Deep Research Analyst" />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="pubDesc" placeholder="What does this skill do? When should an agent use it?" rows="3"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Compatible Agent</label>
+            <select id="pubAgent">
+              <option value="claude">Claude</option>
+              <option value="cursor">Cursor</option>
+              <option value="gpt">GPT / OpenAI</option>
+              <option value="gemini">Gemini</option>
+              <option value="any">Any Agent</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select id="pubType">
+              <option value="skill">Skill (.md)</option>
+              <option value="mcp">MCP Server</option>
+              <option value="agent">AI Agent</option>
+              <option value="prompt">System Prompt</option>
+              <option value="tool">Tool Config</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Tags <span class="hint">(comma separated)</span></label>
+          <input type="text" id="pubTags" placeholder="research, web, analysis, coding" />
+        </div>
+        <div class="form-group">
+          <label>Version</label>
+          <input type="text" id="pubVersion" placeholder="1.0.0" value="1.0.0" />
+        </div>
+      </div>
+      <div class="publish-right">
+        <div class="form-group flex-1">
+          <label>Skill Content <span class="hint">(.md or config)</span></label>
+          <textarea id="pubContent" class="code-editor" placeholder="---
+name: your-skill-name
+description: What this skill does
+---
+
+# Your Skill
+
+## Instructions
+Write your skill instructions here...
+
+## Examples
+- Example usage 1
+- Example usage 2" rows="16"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="form-error" id="pubError"></div>
+      <button class="btn-ghost" id="publishCancel">Cancel</button>
+      <button class="btn-primary" id="publishSubmit">Publish Skill →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SKILL DETAIL MODAL -->
+<div class="modal-overlay" id="skillModal">
+  <div class="modal modal-xl">
+    <div class="skill-modal-header" id="skillModalHeader">
+      <div class="skill-modal-meta">
+        <div class="skill-modal-badges" id="skillModalBadges"></div>
+        <h2 id="skillModalName"></h2>
+        <p id="skillModalDesc"></p>
+        <div class="skill-modal-author" id="skillModalAuthor"></div>
+      </div>
+      <div class="skill-modal-actions">
+        <button class="btn-ghost" id="skillStarBtn">☆ Star</button>
+        <button class="btn-ghost" id="skillForkBtn">⑂ Fork</button>
+        <button class="btn-primary" id="skillInstallBtn">⬇ Install</button>
+        <button class="modal-close" id="skillModalClose">✕</button>
+      </div>
+    </div>
+    <div class="skill-modal-body">
+      <div class="skill-modal-tabs">
+        <button class="stab active" data-stab="readme">README</button>
+        <button class="stab" data-stab="content">Raw Content</button>
+        <button class="stab" data-stab="versions">Versions</button>
+        <button class="stab" data-stab="contributors">Contributors</button>
+      </div>
+      <div class="skill-modal-content" id="skillModalContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-left">
+    <div class="nav-logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">Cognitorn</span>
+    </div>
+    <div class="nav-links">
+      <a class="nav-link active" data-page="explore">Explore</a>
+      <a class="nav-link" data-page="trending">Trending</a>
+      <a class="nav-link" data-page="mcp">MCP Servers</a>
+      <a class="nav-link" data-page="agents">AI Agents</a>
+      <a class="nav-link" data-page="myskills">My Skills</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-search">
+      <span class="search-icon">⌕</span>
+      <input type="text" placeholder="Search skills, agents, tags..." id="globalSearch" />
+      <span class="search-kbd">⌘K</span>
+    </div>
+    <div id="navGuest">
+      <button class="btn-ghost" id="navLoginBtn">Sign In</button>
+      <button class="btn-primary" id="navRegisterBtn">Get Started</button>
+    </div>
+    <div id="navUser" style="display:none">
+      <button class="btn-ghost" id="navPublishBtn">+ Publish</button>
+      <div class="nav-avatar" id="navAvatar"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HERO (shown on explore page) -->
+  <section class="hero" id="heroSection">
+    <div class="hero-eyebrow">
+      <span class="pulse-dot"></span>
+      <span>Open Platform for AI Agent Skills</span>
+    </div>
+    <h1 class="hero-title">
+      The <span class="gradient-text">GitHub</span><br/>
+      for AI Agent Skills
+    </h1>
+    <p class="hero-sub">Publish, fork, and install skills for Claude, Cursor, GPT and more. Collaborate with developers worldwide to build better AI agents.</p>
+    <div class="hero-actions">
+      <button class="btn-primary lg" id="heroExploreBtn">Explore Skills →</button>
+      <button class="btn-ghost lg" id="heroPublishBtn">Publish Your First Skill</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num" id="statSkills">0</span><span class="stat-label">Skills</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num" id="statDevs">0</span><span class="stat-label">Developers</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num" id="statInstalls">0</span><span class="stat-label">Installs</span></div>
+    </div>
+  </section>
+
+  <!-- FILTERS -->
+  <div class="filters-bar" id="filtersBar">
+    <div class="filter-tabs" id="filterTabs">
+      <button class="filter-tab active" data-filter="all">All</button>
+      <button class="filter-tab" data-filter="skill">Skills</button>
+      <button class="filter-tab" data-filter="mcp">MCP Servers</button>
+      <button class="filter-tab" data-filter="agent">AI Agents</button>
+      <button class="filter-tab" data-filter="prompt">Prompts</button>
+      <button class="filter-tab" data-filter="tool">Tools</button>
+    </div>
+    <div class="filter-agents" id="filterAgents">
+      <button class="agent-pill active" data-agent="all">All Agents</button>
+      <button class="agent-pill" data-agent="claude">Claude</button>
+      <button class="agent-pill" data-agent="cursor">Cursor</button>
+      <button class="agent-pill" data-agent="gpt">GPT</button>
+      <button class="agent-pill" data-agent="any">Universal</button>
+    </div>
+    <div class="filter-sort">
+      <select id="sortSelect">
+        <option value="newest">Newest</option>
+        <option value="stars">Most Starred</option>
+        <option value="installs">Most Installed</option>
+        <option value="forks">Most Forked</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- PAGE TITLE -->
+  <div class="page-header" id="pageHeader" style="display:none">
+    <h2 class="page-title" id="pageTitle"></h2>
+    <p class="page-sub" id="pageSub"></p>
+  </div>
+
+  <!-- SKILLS GRID -->
+  <div class="skills-grid" id="skillsGrid"></div>
+
+  <!-- EMPTY STATE -->
+  <div class="empty-state" id="emptyState" style="display:none">
+    <div class="empty-icon">◈</div>
+    <h3>No skills found</h3>
+    <p>Be the first to publish a skill here.</p>
+    <button class="btn-primary" id="emptyPublishBtn">+ Publish Skill</button>
+  </div>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
